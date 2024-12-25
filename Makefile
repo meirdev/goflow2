@@ -23,6 +23,7 @@ DOCKER_CMD    ?= build
 DOCKER_SUFFIX ?= 
 
 OUTPUT := $(DIST_DIR)goflow2-$(VERSION_PKG)-$(GOOS)-$(ARCH)$(EXTENSION)
+OUTPUT_ENRICHER := $(DIST_DIR)enricher-$(VERSION_PKG)-$(GOOS)-$(ARCH)$(EXTENSION)
 
 .PHONY: proto
 proto:
@@ -49,6 +50,7 @@ clean:
 .PHONY: build
 build: prepare
 	go build -ldflags $(LDFLAGS) -o $(OUTPUT) cmd/goflow2/main.go 
+	go build -ldflags $(LDFLAGS) -o $(OUTPUT_ENRICHER) cmd/enricher/main.go 
 
 .PHONY: docker
 docker:
