@@ -74,6 +74,12 @@ func (d *ClickhouseDriver) pushFlows() {
 					IcmpCode:         msg.IcmpCode,
 					FragmentId:       msg.FragmentId,
 					FragmentOffset:   msg.FragmentOffset,
+					SrcAsn:           msg.SrcAsn,
+					DstAsn:           msg.DstAsn,
+					SrcCountry:       msg.SrcCountry,
+					DstCountry:       msg.DstCountry,
+					SrcPrefix:        msg.SrcPrefix,
+					DstPrefix:        msg.DstPrefix,
 				})
 			}
 		}

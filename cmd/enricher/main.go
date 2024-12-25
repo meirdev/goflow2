@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	flowmessage "github.com/netsampler/goflow2/v2/cmd/enricher/pb"
+	flowmessage "github.com/netsampler/goflow2/v2/pb"
 
 	// import various formatters
 	"github.com/netsampler/goflow2/v2/format"
@@ -23,8 +23,11 @@ import (
 
 	// import various transports
 	"github.com/netsampler/goflow2/v2/transport"
+	_ "github.com/netsampler/goflow2/v2/transport/clickhouse"
 	_ "github.com/netsampler/goflow2/v2/transport/file"
 	_ "github.com/netsampler/goflow2/v2/transport/kafka"
+
+	utils "github.com/netsampler/goflow2/v2/utils"
 
 	"github.com/oschwald/geoip2-golang"
 	"google.golang.org/protobuf/encoding/protodelim"
@@ -38,10 +41,10 @@ var (
 	DbAsn     = flag.String("db.asn", "", "IP->ASN database")
 	DbCountry = flag.String("db.country", "", "IP->Country database")
 
+	Prefixes = flag.String("prefixes", "", "Prefixes file")
+
 	LogLevel = flag.String("loglevel", "info", "Log level")
 	LogFmt   = flag.String("logfmt", "normal", "Log formatter")
-
-	SamplingRate = flag.Int("samplingrate", 0, "Set sampling rate (values > 0)")
 
 	Format    = flag.String("format", "json", fmt.Sprintf("Choose the format (available: %s)", strings.Join(format.GetFormats(), ", ")))
 	Transport = flag.String("transport", "file", fmt.Sprintf("Choose the transport (available: %s)", strings.Join(transport.GetTransports(), ", ")))
@@ -56,6 +59,7 @@ func MapAsn(db *geoip2.Reader, addr []byte, dest *uint32) {
 	}
 	*dest = uint32(entry.AutonomousSystemNumber)
 }
+
 func MapCountry(db *geoip2.Reader, addr []byte, dest *string) {
 	entry, err := db.Country(net.IP(addr))
 	if err != nil {
@@ -66,17 +70,17 @@ func MapCountry(db *geoip2.Reader, addr []byte, dest *string) {
 
 func MapFlow(dbAsn, dbCountry *geoip2.Reader, msg *ProtoProducerMessage) {
 	if dbAsn != nil {
-		MapAsn(dbAsn, msg.SrcAddr, &(msg.FlowMessageExt.SrcAs))
-		MapAsn(dbAsn, msg.DstAddr, &(msg.FlowMessageExt.DstAs))
+		MapAsn(dbAsn, msg.SrcAddr, &(msg.FlowMessage.SrcAsn))
+		MapAsn(dbAsn, msg.DstAddr, &(msg.FlowMessage.DstAsn))
 	}
 	if dbCountry != nil {
-		MapCountry(dbCountry, msg.SrcAddr, &(msg.FlowMessageExt.SrcCountry))
-		MapCountry(dbCountry, msg.DstAddr, &(msg.FlowMessageExt.DstCountry))
+		MapCountry(dbCountry, msg.SrcAddr, &(msg.FlowMessage.SrcCountry))
+		MapCountry(dbCountry, msg.DstAddr, &(msg.FlowMessage.DstCountry))
 	}
 }
 
 type ProtoProducerMessage struct {
-	flowmessage.FlowMessageExt
+	flowmessage.FlowMessage
 }
 
 func (m *ProtoProducerMessage) MarshalBinary() ([]byte, error) {
@@ -130,6 +134,30 @@ func main() {
 		defer dbCountry.Close()
 	}
 
+	var prefixes *utils.NetworksTree[string] = utils.NewNetworksTree[string]()
+	if *Prefixes != "" {
+		file, err := os.Open(*Prefixes)
+		if err != nil {
+			slog.Error("error opening prefixes file", slog.String("error", err.Error()))
+			os.Exit(1)
+		}
+		defer file.Close()
+
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if line == "" {
+				continue
+			}
+
+			err := prefixes.Set(line, line)
+			if err != nil {
+				slog.Error("error setting prefix", slog.String("error", err.Error()))
+				os.Exit(1)
+			}
+		}
+	}
+
 	formatter, err := format.FindFormat(*Format)
 	if err != nil {
 		log.Fatal(err)
@@ -157,8 +185,14 @@ func main() {
 
 		MapFlow(dbAsn, dbCountry, &msg)
 
-		if *SamplingRate > 0 {
-			msg.SamplingRate = uint64(*SamplingRate)
+		srcPrefix, err := prefixes.Get(net.IP(msg.SrcAddr).String())
+		if err == nil {
+			msg.SrcPrefix = srcPrefix
+		}
+
+		dstPrefix, err := prefixes.Get(net.IP(msg.DstAddr).String())
+		if err == nil {
+			msg.DstPrefix = dstPrefix
 		}
 
 		key, data, err := formatter.Format(&msg)

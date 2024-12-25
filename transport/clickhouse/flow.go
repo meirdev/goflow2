@@ -31,4 +31,13 @@ type Flow struct {
 
 	FragmentId     uint32 `ch:"fragment_id"`
 	FragmentOffset uint32 `ch:"fragment_offset"`
+
+	SrcAsn uint32 `ch:"src_asn"`
+	DstAsn uint32 `ch:"dst_asn"`
+
+	SrcCountry string `ch:"src_country"`
+	DstCountry string `ch:"dst_country"`
+
+	SrcPrefix string `ch:"src_prefix"`
+	DstPrefix string `ch:"dst_prefix"`
 }
