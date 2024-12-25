@@ -120,4 +120,12 @@ message FlowMessage {
   repeated bytes ipv6_routing_header_addresses = 105; // SRv6
   uint32 ipv6_routing_header_seg_left = 106; // SRv6
 
+  string src_country = 1000;
+  string dst_country = 1001;
+
+  uint32 src_asn = 1010;
+  uint32 dst_asn = 1011;
+
+  string src_prefix = 1020;
+  string dst_prefix = 1021;
 }
