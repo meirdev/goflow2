@@ -25,13 +25,13 @@ In this fork we have added two transport options:
 `-transport.clickhouse`:
 
 ```bash
--transport.clickhose.dsn string (default "clickhouse://127.0.0.1:9000/default")
+-transport.clickhouse.dsn string (default "clickhouse://127.0.0.1:9000/default")
     ClickHouse DSN
 
--transport.clickhose.batchsize int (default 10000)
+-transport.clickhouse.batchsize int (default 10000)
     Wait for this many messages before sending a batch to ClickHouse
 
--transport.clickhose.batchmaxtime int (default 10)
+-transport.clickhouse.batchmaxtime int (default 10)
     Even if the batch size is not reached, send the batch after this many seconds 
 ```
 
