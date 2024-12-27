@@ -22,7 +22,7 @@ not provided.
 
 In this fork we have added two transport options:
 
-`-transport.clickhouse`:
+`-transport=clickhouse`:
 
 ```bash
 -transport.clickhouse.dsn string (default "clickhouse://127.0.0.1:9000/default")
@@ -35,7 +35,7 @@ In this fork we have added two transport options:
     Even if the batch size is not reached, send the batch after this many seconds 
 ```
 
-`-transport.udp`:
+`-transport=udp`:
 
 ```bash
 -transport.udp string (default "127.0.0.1:6000")
