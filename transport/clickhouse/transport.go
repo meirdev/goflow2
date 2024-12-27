@@ -29,9 +29,9 @@ type ClickhouseDriver struct {
 }
 
 func (d *ClickhouseDriver) Prepare() error {
-	flag.StringVar(&d.dsn, "transport.clickhose.dsn", "clickhouse://127.0.0.1:9000/default", "ClickHouse connection string")
-	flag.IntVar(&d.batchSize, "transport.clickhose.batchsize", 10000, "Batch size")
-	flag.IntVar(&d.batchMaxTime, "transport.clickhose.batchmaxtime", 10, "Max time in seconds to wait for a batch to be filled")
+	flag.StringVar(&d.dsn, "transport.clickhouse.dsn", "clickhouse://127.0.0.1:9000/default", "ClickHouse connection string")
+	flag.IntVar(&d.batchSize, "transport.clickhouse.batchsize", 10000, "Batch size")
+	flag.IntVar(&d.batchMaxTime, "transport.clickhouse.batchmaxtime", 10, "Max time in seconds to wait for a batch to be filled")
 
 	return nil
 }
