@@ -133,6 +133,7 @@ func (d *ClickhouseDriver) Send(key, data []byte) error {
 	err := protodelim.UnmarshalFrom(r, &flow)
 	if err != nil {
 		slog.Error("failed to unmarshal flow message", slog.String("error", err.Error()))
+		return nil
 	}
 
 	// slog.Debug("flow message sent", slog.Any("flow", &flow))
