@@ -18,6 +18,47 @@ not provided.
 
 ![GoFlow2 System diagram](/graphics/diagram.png)
 
+## Fork changes
+
+In this fork we have added two transport options:
+
+`-transport.clickhouse`:
+
+```bash
+-transport.clickhose.dsn string (default "clickhouse://127.0.0.1:9000/default")
+    ClickHouse DSN
+
+-transport.clickhose.batchsize int (default 10000)
+    Wait for this many messages before sending a batch to ClickHouse
+
+-transport.clickhose.batchmaxtime int (default 10)
+    Even if the batch size is not reached, send the batch after this many seconds 
+```
+
+`-transport.udp`:
+
+```bash
+-transport.udp string (default "127.0.0.1:6000")
+    UDP address to send the data to
+```
+
+We have also added the option to enrich your data with a prefix that matches the `src_addr` and `dst_addr` fields.
+
+To do this, create a text file and add each prefix on a new line.
+
+```text
+104.155.192.0/19
+2600:1900:5400::/44
+```
+
+Then use the `-prefixes` option to specify the path to the file:
+
+```bash
+./goflow2 -transport.file.sep= -format=bin -listen netflow://:2056 | ./enricher -prefixes=./prefixes.txt
+```
+
+Now, in each flow you will see the `src_prefix` and `dst_prefix` fields with the correct prefix.
+
 ## Origins
 
 This work is a fork of a previous [open-source GoFlow code](https://github.com/cloudflare/goflow) built and used at Cloudflare.
