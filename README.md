@@ -57,7 +57,9 @@ Then use the `-prefixes` option to specify the path to the file:
 ./goflow2 -transport.file.sep= -format=bin -listen netflow://:2056 | ./enricher -prefixes=./prefixes.txt
 ```
 
-Now, in each flow you will see the `src_prefix` and `dst_prefix` fields with the correct prefix.
+Now, in each flow you will see the `src_prefix` and `dst_prefix` fields with the corresponding prefix (if exists).
+
+NOTE: The matched prefix is the longest that matches the IP address.
 
 ## Origins
 
