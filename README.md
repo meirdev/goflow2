@@ -20,6 +20,8 @@ not provided.
 
 ## Fork changes
 
+*Before using clickhouse transport, you need to create a table in ClickHouse: [init.sql](./transport/clickhouse/init.sql)*
+
 In this fork we have added two transport options:
 
 `-transport=clickhouse`:
