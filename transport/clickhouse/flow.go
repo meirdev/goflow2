@@ -1,15 +1,17 @@
 package clickhouse
 
+import "time"
+
 type Flow struct {
-	Type           int32  `ch:"type"`
-	TimeReceivedNs uint64 `ch:"time_received_ns"`
-	SequenceNum    uint32 `ch:"sequence_num"`
-	SamplingRate   uint64 `ch:"sampling_rate"`
+	Type         int32     `ch:"type"`
+	TimeReceived time.Time `ch:"time_received"`
+	SequenceNum  uint32    `ch:"sequence_num"`
+	SamplingRate uint64    `ch:"sampling_rate"`
 
 	SamplerAddress string `ch:"sampler_address"`
 
-	TimeFlowStartNs uint64 `ch:"time_flow_start_ns"`
-	TimeFlowEndNs   uint64 `ch:"time_flow_end_ns"`
+	TimeFlowStart time.Time `ch:"time_flow_start"`
+	TimeFlowEnd   time.Time `ch:"time_flow_end"`
 
 	Bytes   uint64 `ch:"bytes"`
 	Packets uint64 `ch:"packets"`

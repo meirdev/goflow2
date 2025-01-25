@@ -52,14 +52,18 @@ func (d *ClickhouseDriver) pushFlows() {
 			case <-t.C:
 				break inner
 			case msg := <-d.flows:
+				timeReceived := int64(msg.TimeReceivedNs)
+				timeFlowStart := int64(msg.TimeFlowStartNs)
+				timeFlowEnd := int64(msg.TimeFlowEndNs)
+
 				flowsBatch = append(flowsBatch, &Flow{
 					Type:             int32(msg.Type),
-					TimeReceivedNs:   msg.TimeReceivedNs,
+					TimeReceived:     time.Unix(timeReceived/1e9, timeReceived%1e9).UTC(),
 					SequenceNum:      msg.SequenceNum,
 					SamplingRate:     msg.SamplingRate,
 					SamplerAddress:   net.IP(msg.SamplerAddress).String(),
-					TimeFlowStartNs:  msg.TimeFlowStartNs,
-					TimeFlowEndNs:    msg.TimeFlowEndNs,
+					TimeFlowStart:    time.Unix(timeFlowStart/1e9, timeFlowStart%1e9).UTC(),
+					TimeFlowEnd:      time.Unix(timeFlowEnd/1e9, timeFlowEnd%1e9).UTC(),
 					Bytes:            msg.Bytes,
 					Packets:          msg.Packets,
 					SrcAddr:          net.IP(msg.SrcAddr).String(),
