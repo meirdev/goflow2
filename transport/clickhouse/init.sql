@@ -1,14 +1,14 @@
 CREATE TABLE IF NOT EXISTS flows
 (
     type Int32,
-    time_received_ns UInt64,
+    time_received DateTime64,
     sequence_num UInt32,
     sampling_rate UInt64,
 
     sampler_address String,
 
-    time_flow_start_ns UInt64,
-    time_flow_end_ns UInt64,
+    time_flow_start DateTime64,
+    time_flow_end DateTime64,
 
     bytes UInt64,
     packets UInt64,
