@@ -172,13 +172,13 @@ CREATE VIEW IF NOT EXISTS flows_raw_view AS
         date,
 
         transform(type, [0, 1, 2, 3, 4], ['unknown', 'sflow_5', 'netflow_v5', 'netflow_v9', 'ipfix'], toString(type)) AS type,
-        toStartOfMinute(time_received) AS time_received,
+        toStartOfSecond(time_received) AS time_received,
 
         sequence_num,
         sampler_address,
 
-        toStartOfMinute(time_flow_start) AS time_flow_start,
-        toStartOfMinute(time_flow_end) AS time_flow_end,
+        toStartOfSecond(time_flow_start) AS time_flow_start,
+        toStartOfSecond(time_flow_end) AS time_flow_end,
 
         bytes * sampling_rate AS bytes,
         packets * sampling_rate AS packets,
