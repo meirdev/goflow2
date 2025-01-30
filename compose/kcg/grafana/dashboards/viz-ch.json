@@ -115,9 +115,9 @@
             ],
             "columns": [
               {
-                "alias": "time_received",
+                "alias": "time_flow_start",
                 "hint": "time",
-                "name": "time_received",
+                "name": "time_flow_start",
                 "type": "DateTime64(9)"
               }
             ],
@@ -132,7 +132,7 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["time_received"],
+            "groupBy": ["time_flow_start"],
             "limit": 1000,
             "meta": {},
             "mode": "trend",
@@ -154,7 +154,7 @@
           "editorType": "builder",
           "format": 0,
           "pluginVersion": "4.6.0",
-          "rawSql": "SELECT $__timeInterval(time_received) as \"time\", time_received, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_received, time ORDER BY time ASC LIMIT 1000",
+          "rawSql": "SELECT $__timeInterval(time_flow_start) as \"time\", time_flow_start, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_flow_start, time ORDER BY time ASC LIMIT 1000",
           "refId": "A"
         }
       ],
@@ -257,9 +257,9 @@
             ],
             "columns": [
               {
-                "alias": "time_received",
+                "alias": "time_flow_start",
                 "hint": "time",
-                "name": "time_received",
+                "name": "time_flow_start",
                 "type": "DateTime64(9)"
               }
             ],
@@ -274,7 +274,7 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["time_received", "src_addr"],
+            "groupBy": ["time_flow_start", "src_addr"],
             "limit": 1000,
             "meta": {},
             "mode": "trend",
@@ -296,7 +296,7 @@
           "editorType": "builder",
           "format": 0,
           "pluginVersion": "4.6.0",
-          "rawSql": "SELECT $__timeInterval(time_received) as \"time\", time_received, src_addr, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_received, src_addr, time ORDER BY time ASC LIMIT 1000",
+          "rawSql": "SELECT $__timeInterval(time_flow_start) as \"time\", time_flow_start, src_addr, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_flow_start, src_addr, time ORDER BY time ASC LIMIT 1000",
           "refId": "A"
         }
       ],
@@ -399,9 +399,9 @@
             ],
             "columns": [
               {
-                "alias": "time_received",
+                "alias": "time_flow_start",
                 "hint": "time",
-                "name": "time_received",
+                "name": "time_flow_start",
                 "type": "DateTime64(9)"
               }
             ],
@@ -416,7 +416,7 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["time_received", "src_port"],
+            "groupBy": ["time_flow_start", "src_port"],
             "limit": 1000,
             "meta": {},
             "mode": "trend",
@@ -442,7 +442,7 @@
           "editorType": "builder",
           "format": 0,
           "pluginVersion": "4.6.0",
-          "rawSql": "SELECT $__timeInterval(time_received) as \"time\", time_received, src_port, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_received, src_port, time ORDER BY time ASC, bytes DESC LIMIT 1000",
+          "rawSql": "SELECT $__timeInterval(time_flow_start) as \"time\", time_flow_start, src_port, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_flow_start, src_port, time ORDER BY time ASC, bytes DESC LIMIT 1000",
           "refId": "A"
         }
       ],
@@ -545,9 +545,9 @@
             ],
             "columns": [
               {
-                "alias": "time_received",
+                "alias": "time_flow_start",
                 "hint": "time",
-                "name": "time_received",
+                "name": "time_flow_start",
                 "type": "DateTime64(9)"
               }
             ],
@@ -562,7 +562,7 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["time_received", "dst_addr"],
+            "groupBy": ["time_flow_start", "dst_addr"],
             "limit": 1000,
             "meta": {},
             "mode": "trend",
@@ -584,7 +584,7 @@
           "editorType": "builder",
           "format": 0,
           "pluginVersion": "4.6.0",
-          "rawSql": "SELECT $__timeInterval(time_received) as \"time\", time_received, dst_addr, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_received, dst_addr, time ORDER BY time ASC LIMIT 1000",
+          "rawSql": "SELECT $__timeInterval(time_flow_start) as \"time\", time_flow_start, dst_addr, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_flow_start, dst_addr, time ORDER BY time ASC LIMIT 1000",
           "refId": "A"
         }
       ],
@@ -687,9 +687,9 @@
             ],
             "columns": [
               {
-                "alias": "time_received",
+                "alias": "time_flow_start",
                 "hint": "time",
-                "name": "time_received",
+                "name": "time_flow_start",
                 "type": "DateTime64(9)"
               }
             ],
@@ -704,7 +704,7 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["time_received", "src_port"],
+            "groupBy": ["time_flow_start", "src_port"],
             "limit": 1000,
             "meta": {},
             "mode": "trend",
@@ -726,7 +726,7 @@
           "editorType": "builder",
           "format": 0,
           "pluginVersion": "4.6.0",
-          "rawSql": "SELECT $__timeInterval(time_received) as \"time\", time_received, src_port, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_received, src_port, time ORDER BY time ASC LIMIT 1000",
+          "rawSql": "SELECT $__timeInterval(time_flow_start) as \"time\", time_flow_start, src_port, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_flow_start, src_port, time ORDER BY time ASC LIMIT 1000",
           "refId": "A"
         }
       ],
