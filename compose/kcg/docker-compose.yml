@@ -34,6 +34,7 @@ services:
       - ./grafana/provisioning/datasources/default.yaml:/etc/grafana/provisioning/datasources/default.yaml
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - grafana:/var/lib/grafana
 
   goflow2:
