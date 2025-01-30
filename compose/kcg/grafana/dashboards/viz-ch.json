@@ -133,7 +133,6 @@
               }
             ],
             "groupBy": ["time_flow_start"],
-            "limit": null,
             "meta": {},
             "mode": "trend",
             "orderBy": [
@@ -275,7 +274,6 @@
               }
             ],
             "groupBy": ["time_flow_start", "src_addr"],
-            "limit": null,
             "meta": {},
             "mode": "trend",
             "orderBy": [
@@ -417,7 +415,6 @@
               }
             ],
             "groupBy": ["time_flow_start", "src_port"],
-            "limit": null,
             "meta": {},
             "mode": "trend",
             "orderBy": [
@@ -563,7 +560,6 @@
               }
             ],
             "groupBy": ["time_flow_start", "dst_addr"],
-            "limit": null,
             "meta": {},
             "mode": "trend",
             "orderBy": [
@@ -704,8 +700,8 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["time_flow_start", "src_port"],
-            "limit": null,
+            "groupBy": ["time_flow_start", "dst_port"],
+            "limit": 0,
             "meta": {},
             "mode": "trend",
             "orderBy": [
@@ -726,7 +722,7 @@
           "editorType": "builder",
           "format": 0,
           "pluginVersion": "4.6.0",
-          "rawSql": "SELECT $__timeInterval(time_flow_start) as \"time\", time_flow_start, src_port, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_flow_start, src_port, time ORDER BY time ASC",
+          "rawSql": "SELECT $__timeInterval(time_flow_start) as \"time\", time_flow_start, dst_port, sum(bytes) as bytes FROM \"default\".\"flows_raw_view\" WHERE ( time >= $__fromTime AND time <= $__toTime ) GROUP BY time_flow_start, dst_port, time ORDER BY time ASC",
           "refId": "A"
         }
       ],
@@ -749,6 +745,6 @@
   "timezone": "browser",
   "title": "Traffic (ClickHouse)",
   "uid": "cebjemmrj6oe8a",
-  "version": 3,
+  "version": 1,
   "weekStart": ""
 }
