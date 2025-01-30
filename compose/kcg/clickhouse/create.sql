@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS flows
 )
 ENGINE = Kafka()
 SETTINGS
-    kafka_broker_list = 'kafka:9094',
+    kafka_broker_list = 'kafka:9093',
     kafka_num_consumers = 1,
     kafka_topic_list = 'flows',
     kafka_group_name = 'clickhouse',
@@ -180,8 +180,8 @@ CREATE VIEW IF NOT EXISTS flows_raw_view AS
         toStartOfSecond(time_flow_start) AS time_flow_start,
         toStartOfSecond(time_flow_end) AS time_flow_end,
 
-        bytes * sampling_rate AS bytes,
-        packets * sampling_rate AS packets,
+        bytes * max2(sampling_rate, 1) AS bytes,
+        packets * max2(sampling_rate, 1) AS packets,
 
         convertFixedStringIpToString(etype, src_addr) AS src_addr,
         convertFixedStringIpToString(etype, dst_addr) AS dst_addr,
