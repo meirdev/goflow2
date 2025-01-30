@@ -71,6 +71,7 @@ services:
       - ./clickhouse/config.d/dictionaries.xml:/etc/clickhouse-server/config.d/dictionaries.xml
       - ./clickhouse/config.d/config.xml:/etc/clickhouse-server/config.d/config.xml
       - ./clickhouse/data:/data
+      - ./clickhouse/user_files:/var/lib/clickhouse/user_files
       - clickhouse:/var/lib/clickhouse
       - clickhouse-logs:/var/log/clickhouse-server
     depends_on:
