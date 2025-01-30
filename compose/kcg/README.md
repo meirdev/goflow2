@@ -5,7 +5,6 @@ Clickhouse is a powerful data warehouse.
 A sample [docker-compose](./docker-compose.yml) is provided.
 It's composed of:
 * Apache Kafka
-* Apache Zookeeper
 * GoFlow2
 * Prometheus
 * Clickhouse
