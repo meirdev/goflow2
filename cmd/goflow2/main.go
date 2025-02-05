@@ -46,7 +46,7 @@ import (
 	"github.com/netsampler/goflow2/v2/utils/debug"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var (

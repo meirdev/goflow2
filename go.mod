@@ -12,8 +12,8 @@ require (
 	github.com/prometheus/client_golang v1.20.5
 	github.com/stretchr/testify v1.10.0
 	github.com/xdg-go/scram v1.1.2
-	google.golang.org/protobuf v1.36.3
-	gopkg.in/yaml.v2 v2.4.0
+	google.golang.org/protobuf v1.36.4
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -60,5 +60,4 @@ require (
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
