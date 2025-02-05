@@ -33,6 +33,7 @@ import (
 	_ "github.com/netsampler/goflow2/v2/transport/clickhouse"
 	_ "github.com/netsampler/goflow2/v2/transport/file"
 	_ "github.com/netsampler/goflow2/v2/transport/kafka"
+	_ "github.com/netsampler/goflow2/v2/transport/multi"
 	_ "github.com/netsampler/goflow2/v2/transport/udp"
 
 	// various producers
