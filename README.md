@@ -63,6 +63,15 @@ Now, in each flow you will see the `src_prefix` and `dst_prefix` fields with the
 
 NOTE: The matched prefix is the longest that matches the IP address.
 
+`-transport.multi`:
+
+```bash
+-transport.multi string (default "file,udp")
+    Specify the list of transports to use
+```
+
+The multi transport option allows you to send the data to multiple transports at the same time. The data is sent to each transport one after the other.
+
 ## Origins
 
 This work is a fork of a previous [open-source GoFlow code](https://github.com/cloudflare/goflow) built and used at Cloudflare.
