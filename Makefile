@@ -4,7 +4,7 @@ GOOS          ?= linux
 ARCH          ?= $(shell uname -m)
 BUILDINFOSDET ?= 
 
-DOCKER_REPO   ?= netsampler/
+DOCKER_REPO   ?= meirdev/
 NAME          := goflow2
 VERSION       ?= $(shell git describe --abbrev --long HEAD)
 ABBREV        ?= $(shell git rev-parse --short HEAD)
