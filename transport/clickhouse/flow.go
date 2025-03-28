@@ -26,6 +26,12 @@ type Flow struct {
 	SrcPort uint32 `ch:"src_port"`
 	DstPort uint32 `ch:"dst_port"`
 
+	InIf  uint32 `ch:"in_if"`
+	OutIf uint32 `ch:"out_if"`
+
+	SrcMac string `ch:"src_mac"`
+	DstMac string `ch:"dst_mac"`
+
 	ForwardingStatus uint32 `ch:"forwarding_status"`
 	TcpFlags         uint32 `ch:"tcp_flags"`
 	IcmpType         uint32 `ch:"icmp_type"`

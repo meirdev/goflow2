@@ -23,6 +23,12 @@ CREATE TABLE IF NOT EXISTS flows
     src_port UInt32,
     dst_port UInt32,
 
+    in_if UInt32,
+    out_if UInt32,
+
+    src_mac String,
+    dst_mac String,
+
     forwarding_status UInt32,
     tcp_flags UInt32,
     icmp_type UInt32,

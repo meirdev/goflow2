@@ -3,6 +3,7 @@ package clickhouse
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"flag"
 	"log/slog"
 	"net"
@@ -52,26 +53,26 @@ func (d *ClickhouseDriver) pushFlows() {
 			case <-t.C:
 				break inner
 			case msg := <-d.flows:
-				timeReceived := int64(msg.TimeReceivedNs)
-				timeFlowStart := int64(msg.TimeFlowStartNs)
-				timeFlowEnd := int64(msg.TimeFlowEndNs)
-
 				flowsBatch = append(flowsBatch, &Flow{
 					Type:             int32(msg.Type),
-					TimeReceived:     time.Unix(timeReceived/1e9, timeReceived%1e9).UTC(),
+					TimeReceived:     renderTimestamp(msg.TimeReceivedNs),
 					SequenceNum:      msg.SequenceNum,
 					SamplingRate:     msg.SamplingRate,
-					SamplerAddress:   net.IP(msg.SamplerAddress).String(),
-					TimeFlowStart:    time.Unix(timeFlowStart/1e9, timeFlowStart%1e9).UTC(),
-					TimeFlowEnd:      time.Unix(timeFlowEnd/1e9, timeFlowEnd%1e9).UTC(),
+					SamplerAddress:   renderIP(msg.SamplerAddress),
+					TimeFlowStart:    renderTimestamp(msg.TimeFlowStartNs),
+					TimeFlowEnd:      renderTimestamp(msg.TimeFlowEndNs),
 					Bytes:            msg.Bytes,
 					Packets:          msg.Packets,
-					SrcAddr:          net.IP(msg.SrcAddr).String(),
-					DstAddr:          net.IP(msg.DstAddr).String(),
+					SrcAddr:          renderIP(msg.SrcAddr),
+					DstAddr:          renderIP(msg.DstAddr),
 					Etype:            msg.Etype,
 					Proto:            msg.Proto,
 					SrcPort:          msg.SrcPort,
 					DstPort:          msg.DstPort,
+					InIf:             msg.InIf,
+					OutIf:            msg.OutIf,
+					SrcMac:           renderMac(msg.SrcMac),
+					DstMac:           renderMac(msg.DstMac),
 					ForwardingStatus: msg.ForwardingStatus,
 					TcpFlags:         msg.TcpFlags,
 					IcmpType:         msg.IcmpType,
@@ -159,4 +160,18 @@ func init() {
 	}
 
 	transport.RegisterTransportDriver("clickhouse", d)
+}
+
+func renderTimestamp(data uint64) time.Time {
+	return time.Unix(int64(data/1e9), int64(data%1e9)).UTC()
+}
+
+func renderMac(data uint64) string {
+	var mac [8]byte
+	binary.BigEndian.PutUint64(mac[:], data)
+	return net.HardwareAddr(mac[2:]).String()
+}
+
+func renderIP(data []byte) string {
+	return net.IP(data).String()
 }
