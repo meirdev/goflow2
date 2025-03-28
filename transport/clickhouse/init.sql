@@ -37,6 +37,9 @@ CREATE TABLE IF NOT EXISTS flows
     fragment_id UInt32,
     fragment_offset UInt32,
 
+    observation_domain_id UInt32,
+    observation_point_id UInt32,
+
     src_asn UInt32,
     dst_asn UInt32,
 

@@ -40,6 +40,9 @@ type Flow struct {
 	FragmentId     uint32 `ch:"fragment_id"`
 	FragmentOffset uint32 `ch:"fragment_offset"`
 
+	ObservationDomainId uint32 `ch:"observation_domain_id"`
+	ObservationPointId  uint32 `ch:"observation_point_id"`
+
 	SrcAsn uint32 `ch:"src_asn"`
 	DstAsn uint32 `ch:"dst_asn"`
 
