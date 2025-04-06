@@ -18,6 +18,25 @@ not provided.
 
 ![GoFlow2 System diagram](/graphics/diagram.png)
 
+## Fork changes
+
+In this fork we added support for ClickHouse as a transport layer.
+
+`-transport=clickhouse`:
+
+```bash
+-transport.clickhouse.dsn string (default "clickhouse://127.0.0.1:9000/default")
+    ClickHouse DSN
+
+-transport.clickhouse.batchsize int (default 10000)
+    Wait for this many flows before sending a batch to ClickHouse
+
+-transport.clickhouse.batchmaxtime int (default 10)
+    Even if the batch size is not reached, send the batch after this many seconds 
+```
+
+*ClickHouse Transport only works with the bin format!*
+
 ## Origins
 
 This work is a fork of a previous [open-source GoFlow code](https://github.com/cloudflare/goflow) built and used at Cloudflare.
