@@ -16,12 +16,12 @@ CREATE TABLE IF NOT EXISTS flows_sink
     src_addr String,
     dst_addr String,
 
-    etype UInt32,
+    etype UInt16,
 
-    proto UInt32,
+    proto UInt8,
 
-    src_port UInt32,
-    dst_port UInt32,
+    src_port UInt16,
+    dst_port UInt16,
 
     in_if UInt32,
     out_if UInt32,
@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS flows_sink
     dst_mac String,
 
     forwarding_status UInt32,
-    tcp_flags UInt32,
-    icmp_type UInt32,
-    icmp_code UInt32,
+    tcp_flags UInt16,
+    icmp_type UInt16,
+    icmp_code UInt16,
 
     fragment_id UInt32,
     fragment_offset UInt32,

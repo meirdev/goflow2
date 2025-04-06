@@ -19,12 +19,12 @@ type Flow struct {
 	SrcAddr string `ch:"src_addr"`
 	DstAddr string `ch:"dst_addr"`
 
-	Etype uint32 `ch:"etype"`
+	Etype uint16 `ch:"etype"`
 
-	Proto uint32 `ch:"proto"`
+	Proto uint8 `ch:"proto"`
 
-	SrcPort uint32 `ch:"src_port"`
-	DstPort uint32 `ch:"dst_port"`
+	SrcPort uint16 `ch:"src_port"`
+	DstPort uint16 `ch:"dst_port"`
 
 	InIf  uint32 `ch:"in_if"`
 	OutIf uint32 `ch:"out_if"`
@@ -33,9 +33,9 @@ type Flow struct {
 	DstMac string `ch:"dst_mac"`
 
 	ForwardingStatus uint32 `ch:"forwarding_status"`
-	TcpFlags         uint32 `ch:"tcp_flags"`
-	IcmpType         uint32 `ch:"icmp_type"`
-	IcmpCode         uint32 `ch:"icmp_code"`
+	TcpFlags         uint16 `ch:"tcp_flags"`
+	IcmpType         uint16 `ch:"icmp_type"`
+	IcmpCode         uint16 `ch:"icmp_code"`
 
 	FragmentId     uint32 `ch:"fragment_id"`
 	FragmentOffset uint32 `ch:"fragment_offset"`
