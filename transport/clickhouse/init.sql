@@ -37,6 +37,17 @@ CREATE TABLE IF NOT EXISTS flows_sink
     fragment_id UInt32,
     fragment_offset UInt32,
 
+    src_as UInt32,
+    dst_as UInt32,
+
+    src_net UInt8,
+    dst_net UInt8,
+
+    next_hop String,
+    next_hop_as UInt32,
+
+    bgp_next_hop String,
+
     observation_domain_id UInt32,
     observation_point_id UInt32
 )

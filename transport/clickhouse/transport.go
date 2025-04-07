@@ -83,6 +83,13 @@ func (d *ClickhouseDriver) pushFlows() {
 					IcmpCode:            uint16(msg.IcmpCode),
 					FragmentId:          msg.FragmentId,
 					FragmentOffset:      msg.FragmentOffset,
+					SrcAs:               msg.SrcAs,
+					DstAs:               msg.DstAs,
+					SrcNet:              uint8(msg.SrcNet),
+					DstNet:              uint8(msg.DstNet),
+					NextHop:             renderIP(msg.NextHop),
+					NextHopAs:           msg.NextHopAs,
+					BgpNextHop:          renderIP(msg.BgpNextHop),
 					ObservationDomainId: msg.ObservationDomainId,
 					ObservationPointId:  msg.ObservationPointId,
 				})

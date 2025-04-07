@@ -40,6 +40,17 @@ type Flow struct {
 	FragmentId     uint32 `ch:"fragment_id"`
 	FragmentOffset uint32 `ch:"fragment_offset"`
 
+	SrcAs uint32 `ch:"src_as"`
+	DstAs uint32 `ch:"dst_as"`
+
+	SrcNet uint8 `ch:"src_net"`
+	DstNet uint8 `ch:"dst_net"`
+
+	NextHop   string `ch:"next_hop"`
+	NextHopAs uint32 `ch:"next_hop_as"`
+
+	BgpNextHop string `ch:"bgp_next_hop"`
+
 	ObservationDomainId uint32 `ch:"observation_domain_id"`
 	ObservationPointId  uint32 `ch:"observation_point_id"`
 }
