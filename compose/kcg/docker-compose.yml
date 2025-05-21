@@ -80,10 +80,10 @@ services:
     depends_on:
       - kafka
 
-  nflow-generator:
-    image: networkstatic/nflow-generator
-    restart: always
-    command: -p 2055 -t goflow2
+  # nflow-generator:
+  #   image: networkstatic/nflow-generator
+  #   restart: always
+  #   command: -p 2055 -t goflow2
 
 volumes:
   clickhouse:
