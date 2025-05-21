@@ -1,0 +1,34 @@
+[api]
+enabled = true
+address = "0.0.0.0:8686"
+
+[sources.goflow2]
+type = "kafka"
+bootstrap_servers = "kafka:9093"
+group_id = "goflow2"
+topics = ["flows"]
+decoding.codec = "protobuf"
+decoding.protobuf.desc_file = "/etc/vector/flow.proto"
+decoding.protobuf.message_type = "flowpb.FlowMessage"
+framing.method = "length_delimited"
+framing.length_delimited.length_field_length = 1
+auto_offset_reset = "latest"
+
+[transforms.goflow2_fields]
+type = "remap"
+inputs = ["goflow2"]
+source = """
+.dst_addr = ip_ntop!(.dst_addr)
+.src_addr = ip_ntop!(.src_addr)
+.sampler_address = ip_ntop!(.sampler_address)
+.next_hop = ip_ntop!(.next_hop)
+
+.time_flow_start = from_unix_timestamp!(.time_flow_start_ns, unit: "nanoseconds")
+.time_flow_end = from_unix_timestamp!(.time_flow_end_ns, unit: "nanoseconds")
+.time_received = from_unix_timestamp!(.time_received_ns, unit: "nanoseconds")
+"""
+
+[sinks.debug]
+type = "console"
+inputs = ["goflow2_fields"]
+encoding.codec = "json"

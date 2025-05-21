@@ -80,6 +80,19 @@ services:
     depends_on:
       - kafka
 
+  # Use vector.dev to read messages from Kafka
+  # vector:
+  #   image: timberio/vector:0.46.1-debian
+  #   restart: always
+  #   ports:
+  #     - "8686:8686"
+  #   volumes:
+  #     - ./vector/vector.toml:/etc/vector/vector.toml
+  #     - ./vector/flow.proto:/etc/vector/flow.proto
+  #   entrypoint: ["vector", "--config", "/etc/vector/vector.toml"]
+  #   depends_on:
+  #     - goflow2
+
   # nflow-generator:
   #   image: networkstatic/nflow-generator
   #   restart: always
