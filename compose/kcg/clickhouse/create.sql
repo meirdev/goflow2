@@ -76,6 +76,11 @@ CREATE FUNCTION IF NOT EXISTS convertFlowTcpFlagsToString AS (tcp_flags) ->
     if(tcp_flags = 0, 'EMPTY', arrayStringConcat(arrayMap(x -> transform(x, [1, 2, 4, 8, 16, 32, 64, 128, 256, 512], ['FIN', 'SYN', 'RST', 'PSH', 'ACK', 'URG', 'ECN', 'CWR', 'NONCE', 'RESERVED'], toString(x)), bitmaskToArray(tcp_flags)), '+'))
 );
 
+CREATE FUNCTION IF NOT EXISTS convertFlowForwardingStatusToString AS (forwarding_status) ->
+(
+    transform(forwarding_status, [0, 1, 2, 3], ['unknown', 'forwarded', 'dropped', 'consumed'], toString(forwarding_status))
+);
+
 CREATE TABLE IF NOT EXISTS flows_raw
 (
     type LowCardinality(String),
