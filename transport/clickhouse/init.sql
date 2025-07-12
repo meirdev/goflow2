@@ -52,3 +52,13 @@ CREATE TABLE IF NOT EXISTS flows_sink
     observation_point_id UInt32
 )
 ENGINE = Null();
+
+-- The following commented-out code is an example of how to create a table and materialized view to store the flows from the `flows_sink` table.
+
+-- CREATE TABLE IF NOT EXISTS flows AS flows_sink
+-- ENGINE = MergeTree()
+-- PARTITION BY toDate(time_received)
+-- ORDER BY time_received
+-- TTL toDate(time_received) + INTERVAL 30 DAY;
+
+-- CREATE MATERIALIZED VIEW IF NOT EXISTS flows_mv TO flows AS SELECT * FROM flows_sink;
