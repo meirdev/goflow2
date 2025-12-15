@@ -8,6 +8,7 @@ import (
 	"flag"
 	"log/slog"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/netsampler/goflow2/v2/transport"
@@ -27,25 +28,34 @@ type ClickhouseDriver struct {
 
 	batchSize    int
 	batchMaxTime int
+	maxWorkers   int
 
 	connection driver.Conn
 
-	flows chan *flowpb.FlowMessage
+	flows  chan *flowpb.FlowMessage
+	wg     sync.WaitGroup
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 func (d *ClickhouseDriver) Prepare() error {
 	flag.StringVar(&d.dsn, "transport.clickhouse.dsn", "clickhouse://127.0.0.1:9000/default", "ClickHouse connection string")
 	flag.IntVar(&d.batchSize, "transport.clickhouse.batchsize", 10000, "Batch size")
 	flag.IntVar(&d.batchMaxTime, "transport.clickhouse.batchmaxtime", 10, "Max time in seconds to wait for a batch to be filled")
+	flag.IntVar(&d.maxWorkers, "transport.clickhouse.workers", 8, "Max number of pushing data workers")
 
 	return nil
 }
 
-func (d *ClickhouseDriver) pushFlows() {
+func (d *ClickhouseDriver) pushFlows(workerID int) {
+	defer d.wg.Done()
+
 	batchMaxTime := time.Duration(d.batchMaxTime) * time.Second
 
+	slog.Info("worker started", slog.Int("worker_id", workerID))
+
 	for {
-		slog.Debug("start collecting flows")
+		slog.Debug("start collecting flows", slog.Int("worker_id", workerID))
 
 		flowsBatch := make([]*Flow, 0, d.batchSize)
 
@@ -54,6 +64,10 @@ func (d *ClickhouseDriver) pushFlows() {
 	inner:
 		for len(flowsBatch) < d.batchSize {
 			select {
+			case <-d.ctx.Done():
+				t.Stop()
+				slog.Info("worker stopping", slog.Int("worker_id", workerID))
+				return
 			case <-t.C:
 				break inner
 			case msg := <-d.flows:
@@ -96,24 +110,26 @@ func (d *ClickhouseDriver) pushFlows() {
 			}
 		}
 
-		slog.Debug("collected flows", slog.Int("batch", len(flowsBatch)))
+		t.Stop()
+
+		slog.Debug("collected flows", slog.Int("worker_id", workerID), slog.Int("batch", len(flowsBatch)))
 
 		if len(flowsBatch) > 0 {
 			batch, err := d.connection.PrepareBatch(context.TODO(), "INSERT INTO flows_sink")
 			if err != nil {
-				slog.Error("failed to prepare batch", slog.String("error", err.Error()))
+				slog.Error("failed to prepare batch", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
 			}
 
 			for _, flow := range flowsBatch {
 				err := batch.AppendStruct(flow)
 				if err != nil {
-					slog.Error("failed to append struct", slog.String("error", err.Error()))
+					slog.Error("failed to append struct", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
 				}
 			}
 
 			err = batch.Send()
 			if err != nil {
-				slog.Error("failed to send batch", slog.String("error", err.Error()))
+				slog.Error("failed to send batch", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
 			}
 		}
 	}
@@ -137,7 +153,14 @@ func (d *ClickhouseDriver) Init() error {
 		return err
 	}
 
-	go d.pushFlows()
+	d.ctx, d.cancel = context.WithCancel(context.Background())
+
+	for i := 0; i < d.maxWorkers; i++ {
+		d.wg.Add(1)
+		go d.pushFlows(i)
+	}
+
+	slog.Info("clickhouse transport initialized", slog.Int("workers", d.maxWorkers))
 
 	return nil
 }
@@ -161,6 +184,16 @@ func (d *ClickhouseDriver) Send(key, data []byte) error {
 }
 
 func (d *ClickhouseDriver) Close() error {
+	slog.Info("shutting down clickhouse transport")
+
+	if d.cancel != nil {
+		d.cancel()
+	}
+
+	d.wg.Wait()
+
+	slog.Info("all workers stopped")
+
 	d.connection.Close()
 
 	return nil
