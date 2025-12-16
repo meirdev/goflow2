@@ -32,10 +32,11 @@ type ClickhouseDriver struct {
 
 	connection driver.Conn
 
-	flows  chan *flowpb.FlowMessage
-	wg     sync.WaitGroup
-	ctx    context.Context
-	cancel context.CancelFunc
+	flows      chan *flowpb.FlowMessage
+	flowsBatch chan []*Flow
+	wg         sync.WaitGroup
+	ctx        context.Context
+	cancel     context.CancelFunc
 }
 
 func (d *ClickhouseDriver) Prepare() error {
@@ -47,15 +48,14 @@ func (d *ClickhouseDriver) Prepare() error {
 	return nil
 }
 
-func (d *ClickhouseDriver) pushFlows(workerID int) {
+func (d *ClickhouseDriver) collectFlowBatch() {
 	defer d.wg.Done()
+	defer close(d.flowsBatch)
 
 	batchMaxTime := time.Duration(d.batchMaxTime) * time.Second
 
-	slog.Info("worker started", slog.Int("worker_id", workerID))
-
 	for {
-		slog.Debug("start collecting flows", slog.Int("worker_id", workerID))
+		slog.Debug("start collecting flows")
 
 		flowsBatch := make([]*Flow, 0, d.batchSize)
 
@@ -66,7 +66,7 @@ func (d *ClickhouseDriver) pushFlows(workerID int) {
 			select {
 			case <-d.ctx.Done():
 				t.Stop()
-				slog.Info("worker stopping", slog.Int("worker_id", workerID))
+				slog.Info("stopping collecting")
 				return
 			case <-t.C:
 				break inner
@@ -112,30 +112,62 @@ func (d *ClickhouseDriver) pushFlows(workerID int) {
 
 		t.Stop()
 
-		slog.Debug("collected flows", slog.Int("worker_id", workerID), slog.Int("batch", len(flowsBatch)))
+		slog.Debug("collected flows", slog.Int("batch", len(flowsBatch)))
 
 		if len(flowsBatch) > 0 {
-			batch, err := d.connection.PrepareBatch(context.TODO(), "INSERT INTO flows_sink")
-			if err != nil {
-				slog.Error("failed to prepare batch", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
-			}
+			d.flowsBatch <- flowsBatch
+		}
+	}
+}
 
-			for _, flow := range flowsBatch {
-				err := batch.AppendStruct(flow)
-				if err != nil {
-					slog.Error("failed to append struct", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
-				}
-			}
+func (d *ClickhouseDriver) pushFlows(workerID int) {
+	defer d.wg.Done()
 
-			err = batch.Send()
+	slog.Info("push flows worker started", slog.Int("worker_id", workerID))
+
+	for flowsBatch := range d.flowsBatch {
+		now := time.Now()
+
+		batch, err := d.connection.PrepareBatch(d.ctx, "INSERT INTO flows_sink")
+		if err != nil {
+			slog.Error("failed to prepare batch", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
+			continue
+		}
+
+		var lastTimeReceived time.Time
+
+		for _, flow := range flowsBatch {
+			err := batch.AppendStruct(flow)
 			if err != nil {
-				slog.Error("failed to send batch", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
+				slog.Error("failed to append struct", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
 			}
+			lastTimeReceived = flow.TimeReceived
+		}
+
+		err = batch.Send()
+		if err != nil {
+			slog.Error("failed to send batch", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
+			continue
+		}
+
+		diff := now.Sub(lastTimeReceived)
+		if diff.Seconds() >= 30 {
+			slog.Warn("delay between flows collection and pushing data", slog.Float64("seconds", diff.Seconds()))
 		}
 	}
 }
 
 func (d *ClickhouseDriver) Init() error {
+	if d.batchSize <= 0 {
+		d.batchSize = 10000
+	}
+	if d.batchMaxTime <= 0 {
+		d.batchMaxTime = 10
+	}
+	if d.maxWorkers <= 0 {
+		d.maxWorkers = 8
+	}
+
 	options, err := clickhouse.ParseDSN(d.dsn)
 	if err != nil {
 		return err
@@ -154,6 +186,9 @@ func (d *ClickhouseDriver) Init() error {
 	}
 
 	d.ctx, d.cancel = context.WithCancel(context.Background())
+
+	d.wg.Add(1)
+	go d.collectFlowBatch()
 
 	for i := 0; i < d.maxWorkers; i++ {
 		d.wg.Add(1)
@@ -175,8 +210,6 @@ func (d *ClickhouseDriver) Send(key, data []byte) error {
 		slog.Error("failed to unmarshal flow message", slog.String("error", err.Error()))
 		return nil
 	}
-
-	// slog.Debug("flow message sent", slog.Any("flow", &flow))
 
 	d.flows <- &flow
 
@@ -201,7 +234,8 @@ func (d *ClickhouseDriver) Close() error {
 
 func init() {
 	d := &ClickhouseDriver{
-		flows: make(chan *flowpb.FlowMessage),
+		flows:      make(chan *flowpb.FlowMessage),
+		flowsBatch: make(chan []*Flow),
 	}
 
 	transport.RegisterTransportDriver("clickhouse", d)
