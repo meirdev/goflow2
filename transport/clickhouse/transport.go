@@ -72,7 +72,7 @@ func (d *ClickhouseDriver) collectFlowBatch() {
 				break inner
 			case msg := <-d.flows:
 				flowsBatch = append(flowsBatch, &Flow{
-					Type:                int32(msg.Type),
+					Type:                msg.Type.String(),
 					TimeReceived:        renderTimestamp(msg.TimeReceivedNs),
 					SequenceNum:         msg.SequenceNum,
 					SamplingRate:        msg.SamplingRate,
@@ -93,6 +93,9 @@ func (d *ClickhouseDriver) collectFlowBatch() {
 					DstMac:              renderMac(msg.DstMac),
 					ForwardingStatus:    msg.ForwardingStatus,
 					TcpFlags:            uint16(msg.TcpFlags),
+					IpTos:               msg.IpTos,
+					IpTtl:               msg.IpTtl,
+					IpFlags:             msg.IpFlags,
 					IcmpType:            uint16(msg.IcmpType),
 					IcmpCode:            uint16(msg.IcmpCode),
 					FragmentId:          msg.FragmentId,
@@ -248,9 +251,17 @@ func renderTimestamp(data uint64) time.Time {
 func renderMac(data uint64) string {
 	var mac [8]byte
 	binary.BigEndian.PutUint64(mac[:], data)
-	return net.HardwareAddr(mac[2:]).String()
+	hardwareAddr := net.HardwareAddr(mac[2:])
+	if hardwareAddr == nil {
+		return ""
+	}
+	return hardwareAddr.String()
 }
 
 func renderIP(data []byte) string {
-	return net.IP(data).String()
+	ip := net.IP(data)
+	if ip == nil {
+		return ""
+	}
+	return ip.String()
 }

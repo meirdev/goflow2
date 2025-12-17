@@ -3,7 +3,7 @@ package clickhouse
 import "time"
 
 type Flow struct {
-	Type         int32     `ch:"type"`
+	Type         string    `ch:"type"`
 	TimeReceived time.Time `ch:"time_received"`
 	SequenceNum  uint32    `ch:"sequence_num"`
 	SamplingRate uint64    `ch:"sampling_rate"`
@@ -33,9 +33,15 @@ type Flow struct {
 	DstMac string `ch:"dst_mac"`
 
 	ForwardingStatus uint32 `ch:"forwarding_status"`
-	TcpFlags         uint16 `ch:"tcp_flags"`
-	IcmpType         uint16 `ch:"icmp_type"`
-	IcmpCode         uint16 `ch:"icmp_code"`
+
+	IpTos   uint32 `ch:"ip_tos"`
+	IpTtl   uint32 `ch:"ip_ttl"`
+	IpFlags uint32 `ch:"ip_flags"`
+
+	TcpFlags uint16 `ch:"tcp_flags"`
+
+	IcmpType uint16 `ch:"icmp_type"`
+	IcmpCode uint16 `ch:"icmp_code"`
 
 	FragmentId     uint32 `ch:"fragment_id"`
 	FragmentOffset uint32 `ch:"fragment_offset"`

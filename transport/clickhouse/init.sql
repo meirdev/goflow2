@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS flows_sink
 (
-    type Int32,
+    type String,
     time_received DateTime64,
     sequence_num UInt32,
     sampling_rate UInt64,
@@ -30,7 +30,13 @@ CREATE TABLE IF NOT EXISTS flows_sink
     dst_mac String,
 
     forwarding_status UInt32,
+
+    ip_tos UInt32,
+    ip_ttl UInt32,
+    ip_flags UInt32,
+
     tcp_flags UInt16,
+
     icmp_type UInt16,
     icmp_code UInt16,
 
