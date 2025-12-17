@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/netsampler/goflow2/v2/metrics"
 	"github.com/netsampler/goflow2/v2/transport"
 	"google.golang.org/protobuf/encoding/protodelim"
 
@@ -138,11 +139,14 @@ func (d *ClickhouseDriver) pushFlows(workerID int) {
 		}
 
 		var lastTimeReceived time.Time
+		var successCount int
 
 		for _, flow := range flowsBatch {
 			err := batch.AppendStruct(flow)
 			if err != nil {
 				slog.Error("failed to append struct", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
+			} else {
+				successCount++
 			}
 			lastTimeReceived = flow.TimeReceived
 		}
@@ -152,6 +156,8 @@ func (d *ClickhouseDriver) pushFlows(workerID int) {
 			slog.Error("failed to send batch", slog.Int("worker_id", workerID), slog.String("error", err.Error()))
 			continue
 		}
+
+		metrics.ClickHouseFlowsInserted.Add(float64(successCount))
 
 		diff := now.Sub(lastTimeReceived)
 		if diff.Seconds() >= 30 {
