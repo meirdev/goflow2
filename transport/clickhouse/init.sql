@@ -127,9 +127,6 @@ ENGINE = Null();
 -- ENGINE = MergeTree()
 -- PARTITION BY toDate(time_received)
 -- ORDER BY time_received
--- TTL toDate(time_received) + INTERVAL 30 DAY
--- INDEX idx_sampler_address sampler_address TYPE bloom_filter GRANULARITY 1
--- INDEX idx_src_addr src_addr TYPE bloom_filter GRANULARITY 1
--- INDEX idx_dst_addr dst_addr TYPE bloom_filter GRANULARITY 1;
+-- TTL toDate(time_received) + INTERVAL 30 DAY;
 
 -- CREATE MATERIALIZED VIEW IF NOT EXISTS flows_mv TO flows AS SELECT * FROM flows_sink;
