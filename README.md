@@ -20,19 +20,40 @@ not provided.
 
 ## Fork changes
 
-In this fork we added support for ClickHouse as a transport layer.
+In this fork we added support for ClickHouse as a transport layer using the high-performance [ch-go](https://github.com/ClickHouse/ch-go) library with connection pooling.
 
 `-transport=clickhouse`:
 
 ```bash
--transport.clickhouse.dsn string (default "clickhouse://127.0.0.1:9000/default")
-    ClickHouse DSN
+-transport.clickhouse.address string (default "127.0.0.1:9000")
+    ClickHouse server address
+
+-transport.clickhouse.database string (default "default")
+    ClickHouse database name
+
+-transport.clickhouse.username string (default "default")
+    ClickHouse username
+
+-transport.clickhouse.password string (default "")
+    ClickHouse password
 
 -transport.clickhouse.batchsize int (default 10000)
-    Wait for this many flows before sending a batch to ClickHouse
+    Batch size - wait for this many flows before sending a batch to ClickHouse
 
 -transport.clickhouse.batchmaxtime int (default 10)
-    Even if the batch size is not reached, send the batch after this many seconds 
+    Max time in seconds to wait for a batch to be filled
+
+-transport.clickhouse.workers int (default 8)
+    Max number of pushing data workers
+
+-transport.clickhouse.poolsize int (default 8)
+    Connection pool size
+
+-transport.clickhouse.maxretries int (default 3)
+    Max number of retries for failed batch inserts
+
+-transport.clickhouse.delaythreshold int (default 30)
+    Delay warning threshold in seconds
 ```
 
 *ClickHouse Transport only works with the bin format!*

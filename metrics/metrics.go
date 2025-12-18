@@ -135,6 +135,13 @@ var (
 			Namespace: NAMESPACE,
 		},
 	)
+	ClickHouseFlowsReceived = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name:      "clickhouse_flows_received_total",
+			Help:      "Total number of flows received by ClickHouse transport.",
+			Namespace: NAMESPACE,
+		},
+	)
 )
 
 func init() {
@@ -160,4 +167,5 @@ func init() {
 	prometheus.MustRegister(SFlowSampleRecordsStatsSum)
 
 	prometheus.MustRegister(ClickHouseFlowsInserted)
+	prometheus.MustRegister(ClickHouseFlowsReceived)
 }
